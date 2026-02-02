@@ -151,7 +151,7 @@ function Landing({navigate}) {
       <div style={{position:'absolute',bottom:'28px',left:'32px',fontFamily:'var(--fm)',fontSize:'11px',color:'rgba(255,255,255,.35)',pointerEvents:'none',zIndex:14}}>{new Date().toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.')}</div>
       <div style={{position:'absolute',top:'28px',right:'32px',fontFamily:'var(--fm)',fontSize:'10px',color:'rgba(255,255,255,.4)',pointerEvents:'none',zIndex:14,textAlign:'right',lineHeight:1.7}}><div>TAPE 00:47:23</div><div style={{display:'flex',alignItems:'center',gap:'4px',justifyContent:'flex-end',marginTop:'2px'}}><span>BAT</span><div style={{width:'18px',height:'7px',border:'1px solid rgba(255,255,255,.35)',borderRadius:'2px'}}><div style={{width:'13px',height:'100%',background:'rgba(255,255,255,.5)',borderRadius:'1px'}}/></div></div></div>
       <div style={{textAlign:'center',position:'relative',zIndex:15}}>
-        <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'2px'}}>Blackbird</h1>
+    <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'2px'}}>Blackbird</h1>
         <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'46px'}}>Exclusives</h1>
         {showBtn&&<button onClick={()=>navigate('catalog')} style={{fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',color:'var(--adim)',padding:'11px 30px',border:'1px solid rgba(255,255,255,.22)',borderRadius:'2px',background:'rgba(255,255,255,.04)',transition:'all .35s',animation:'fadeUp .6s cubic-bezier(.22,1,.36,1) forwards'}}
           onMouseEnter={e=>{e.target.style.borderColor='rgba(255,255,255,.45)';e.target.style.color='var(--accent)';e.target.style.background='rgba(255,255,255,.08)'}}
@@ -163,7 +163,7 @@ function Landing({navigate}) {
 
 // ─── NAV ─────────────────────────────────────────────────────────────────────
 function Nav({page,navigate,cartCount}) {
-  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`}];
+  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`},{id:'admin',label:'ADMIN'}];
   return (
     <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(10,10,10,.88)',backdropFilter:'blur(14px)',borderBottom:'1px solid rgba(255,255,255,.07)',padding:'0 28px'}}>
       <div style={{maxWidth:'1100px',margin:'0 auto',height:'54px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
@@ -171,6 +171,10 @@ function Nav({page,navigate,cartCount}) {
         <div style={{display:'flex',gap:'28px'}}>
           {tabs.map(t=><button key={t.id} onClick={()=>navigate(t.id)} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:page===t.id?'var(--accent)':'var(--tdim)',paddingBottom:'4px',borderBottom:page===t.id?'1px solid var(--adim)':'1px solid transparent',transition:'all .3s'}}>{t.label}</button>)}
         </div>
+      </div>
+    </nav>
+  );
+}
       </div>
     </nav>
   );
