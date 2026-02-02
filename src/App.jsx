@@ -167,7 +167,7 @@ function Nav({page,navigate,cartCount}) {
   return (
     <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(10,10,10,.88)',backdropFilter:'blur(14px)',borderBottom:'1px solid rgba(255,255,255,.07)',padding:'0 28px'}}>
       <div style={{maxWidth:'1100px',margin:'0 auto',height:'54px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <button onClick={()=>navigate('landing')} style={{fontFamily:'var(--fc)',fontSize:'24px',color:'var(--accent)',letterSpacing:'1px'}}>Blackbird Exclusives</button>
+     <button onClick={()=>navigate('landing')} style={{fontFamily:'var(--fc)',fontSize:'24px',color:'var(--accent)',letterSpacing:'1px'}}>Blackbird Exclusives</button>
         <div style={{display:'flex',gap:'28px'}}>
           {tabs.map(t=><button key={t.id} onClick={()=>navigate(t.id)} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:page===t.id?'var(--accent)':'var(--tdim)',paddingBottom:'4px',borderBottom:page===t.id?'1px solid var(--adim)':'1px solid transparent',transition:'all .3s'}}>{t.label}</button>)}
         </div>
@@ -175,11 +175,6 @@ function Nav({page,navigate,cartCount}) {
     </nav>
   );
 }
-      </div>
-    </nav>
-  );
-}
-
 // ─── CATALOG ─────────────────────────────────────────────────────────────────
 function Catalog({navigate,cart,setCart,products}) {
   const [filter,setFilter]=useState('All'),[sort,setSort]=useState('featured'),[search,setSearch]=useState('');
