@@ -157,14 +157,13 @@ function Landing({navigate}) {
         {showBtn&&<button onClick={()=>navigate('catalog')} style={{fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',color:'var(--adim)',padding:'11px 30px',border:'1px solid rgba(255,255,255,.22)',borderRadius:'2px',background:'rgba(255,255,255,.04)',transition:'all .35s',animation:'fadeUp .6s cubic-bezier(.22,1,.36,1) forwards'}}
           onMouseEnter={e=>{e.target.style.borderColor='rgba(255,255,255,.45)';e.target.style.color='var(--accent)';e.target.style.background='rgba(255,255,255,.08)'}}
           onMouseLeave={e=>{e.target.style.borderColor='rgba(255,255,255,.22)';e.target.style.color='var(--adim)';e.target.style.background='rgba(255,255,255,.04)'}}>ENTER ARCHIVE</button>}
-      </div>
+</div>
     </div>
   );
 }
-
 // ─── NAV ─────────────────────────────────────────────────────────────────────
 function Nav({page,navigate,cartCount}) {
-  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`}];
+  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`},{id:'admin',label:'ADMIN'}];
   return (
     <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(10,10,10,.88)',backdropFilter:'blur(14px)',borderBottom:'1px solid rgba(255,255,255,.07)',padding:'0 28px'}}>
       <div style={{maxWidth:'1100px',margin:'0 auto',height:'54px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
