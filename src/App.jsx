@@ -471,17 +471,20 @@ export default function App() {
       if(d&&d.length>0){setProducts(d);setUsingSeed(false)}
       else{setProducts(SEED);setUsingSeed(true)}
       setLoading(false);
-    };
-    load();
-  },[]);
+};
+  load();
+},[]);
 
-  const navigate=useCallback((target,data=null)=>{
-    setTransitioning(true);
-    setTimeout(()=>{setPage(target);setPageData(data);setTransitioning(false)},320);
-  },[]);
+const navigate=useCallback((target,data=null)=>{
+  setTransitioning(true);
+  setTimeout(()=>{setPage(target);setPageData(data);setTransitioning(false)},320);
+},[]);
 
-  if(loading) return (<div><GS/><Landscape/><div style={{position:'relative',zIndex:1,height:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:'11px',color:'#6b6358',letterSpacing:'3px'}}>LOADING...</div></div></div>);
+useEffect(() => {
+  window.navigate = navigate;
+}, [navigate]);
 
+if(loading) return (<div><GS/><Landscape/><div style={{position:'relative',zIndex:1,height:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:'11px',color:'#6b6358',letterSpacing:'3px'}}>LOADING...</div></div></div>);
   const page_component = ()=>{
     switch(page){
       case 'landing': return <Landing navigate={navigate}/>;
