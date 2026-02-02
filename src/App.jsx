@@ -102,12 +102,13 @@ function PImg({url,style={}}) {
 function Polaroid({product,onClick,index}) {
   const [hov,setHov]=useState(false);
   const rng=sRand(product.id*7+13),rot=(rng()-.5)*4;
+  const firstImg = product.image_url ? (product.image_url.includes(',') ? product.image_url.split(',')[0] : product.image_url) : '';
   return (
     <div onClick={onClick} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
       style={{transform:`rotate(${rot}deg) ${hov?'scale(1.035) translateY(-6px)':'scale(1)'}`,transition:'transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s',boxShadow:hov?'0 14px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.3)':'0 6px 20px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.25)',cursor:'pointer',animation:`pageIn .5s cubic-bezier(.22,1,.36,1) ${index*.07}s both`}}>
       <div style={{background:'#e8e8e8',borderRadius:'3px',padding:'10px 10px 56px 10px',position:'relative'}}>
         <div style={{width:'100%',aspectRatio:'1',borderRadius:'2px',overflow:'hidden',position:'relative'}}>
-          <PImg url={product.image_url} style={{width:'100%',height:'100%'}}/>
+          <PImg url={firstImg} style={{width:'100%',height:'100%'}}/>
           <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.15) 100%)',pointerEvents:'none'}}/>
         </div>
         <div style={{position:'absolute',bottom:0,left:0,right:0,height:'56px',padding:'8px 14px',display:'flex',flexDirection:'column',justifyContent:'center',gap:'2px'}}>
@@ -151,7 +152,7 @@ function Landing({navigate}) {
       <div style={{position:'absolute',bottom:'28px',left:'32px',fontFamily:'var(--fm)',fontSize:'11px',color:'rgba(255,255,255,.35)',pointerEvents:'none',zIndex:14}}>{new Date().toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.')}</div>
       <div style={{position:'absolute',top:'28px',right:'32px',fontFamily:'var(--fm)',fontSize:'10px',color:'rgba(255,255,255,.4)',pointerEvents:'none',zIndex:14,textAlign:'right',lineHeight:1.7}}><div>TAPE 00:47:23</div><div style={{display:'flex',alignItems:'center',gap:'4px',justifyContent:'flex-end',marginTop:'2px'}}><span>BAT</span><div style={{width:'18px',height:'7px',border:'1px solid rgba(255,255,255,.35)',borderRadius:'2px'}}><div style={{width:'13px',height:'100%',background:'rgba(255,255,255,.5)',borderRadius:'1px'}}/></div></div></div>
       <div style={{textAlign:'center',position:'relative',zIndex:15}}>
-    <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'2px'}}>Blackbird</h1>
+        <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'2px'}}>Blackbird</h1>
         <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'46px'}}>Exclusives</h1>
         {showBtn&&<button onClick={()=>navigate('catalog')} style={{fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',color:'var(--adim)',padding:'11px 30px',border:'1px solid rgba(255,255,255,.22)',borderRadius:'2px',background:'rgba(255,255,255,.04)',transition:'all .35s',animation:'fadeUp .6s cubic-bezier(.22,1,.36,1) forwards'}}
           onMouseEnter={e=>{e.target.style.borderColor='rgba(255,255,255,.45)';e.target.style.color='var(--accent)';e.target.style.background='rgba(255,255,255,.08)'}}
@@ -163,11 +164,11 @@ function Landing({navigate}) {
 
 // ─── NAV ─────────────────────────────────────────────────────────────────────
 function Nav({page,navigate,cartCount}) {
-  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`},{id:'admin',label:'ADMIN'}];
+  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`}];
   return (
     <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(10,10,10,.88)',backdropFilter:'blur(14px)',borderBottom:'1px solid rgba(255,255,255,.07)',padding:'0 28px'}}>
       <div style={{maxWidth:'1100px',margin:'0 auto',height:'54px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-     <button onClick={()=>navigate('landing')} style={{fontFamily:'var(--fc)',fontSize:'24px',color:'var(--accent)',letterSpacing:'1px'}}>Blackbird Exclusives</button>
+        <button onClick={()=>navigate('landing')} style={{fontFamily:'var(--fc)',fontSize:'24px',color:'var(--accent)',letterSpacing:'1px'}}>Blackbird Exclusives</button>
         <div style={{display:'flex',gap:'28px'}}>
           {tabs.map(t=><button key={t.id} onClick={()=>navigate(t.id)} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:page===t.id?'var(--accent)':'var(--tdim)',paddingBottom:'4px',borderBottom:page===t.id?'1px solid var(--adim)':'1px solid transparent',transition:'all .3s'}}>{t.label}</button>)}
         </div>
@@ -175,6 +176,7 @@ function Nav({page,navigate,cartCount}) {
     </nav>
   );
 }
+
 // ─── CATALOG ─────────────────────────────────────────────────────────────────
 function Catalog({navigate,cart,setCart,products}) {
   const [filter,setFilter]=useState('All'),[sort,setSort]=useState('featured'),[search,setSearch]=useState('');
@@ -209,6 +211,8 @@ function Catalog({navigate,cart,setCart,products}) {
 // ─── PRODUCT ─────────────────────────────────────────────────────────────────
 function Product({product,navigate,cart,setCart}) {
   const [added,setAdded]=useState(false);
+  const images = product.image_url ? (product.image_url.includes(',') ? product.image_url.split(',').filter(u=>u.trim()) : [product.image_url]) : [];
+  const [currentImg,setCurrentImg]=useState(0);
   const add=()=>{setCart(prev=>[...prev,{...product}]);setAdded(true);setTimeout(()=>setAdded(false),1600)};
   return (
     <div className="pe" style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
@@ -219,10 +223,27 @@ function Product({product,navigate,cart,setCart}) {
           <span style={{margin:'0 8px'}}>›</span><span>{product.name.toUpperCase()}</span>
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'48px',alignItems:'start'}}>
-          <div style={{position:'relative'}}>
-            <PImg url={product.image_url} style={{aspectRatio:'1'}}/>
-            <div style={{position:'absolute',top:'10px',left:'10px',width:'20px',height:'20px',borderTop:'1.5px solid rgba(255,255,255,.25)',borderLeft:'1.5px solid rgba(255,255,255,.25)',pointerEvents:'none'}}/>
-            <div style={{position:'absolute',bottom:'10px',right:'10px',width:'20px',height:'20px',borderBottom:'1.5px solid rgba(255,255,255,.25)',borderRight:'1.5px solid rgba(255,255,255,.25)',pointerEvents:'none'}}/>
+          <div>
+            <div style={{position:'relative',marginBottom:'16px'}}>
+              <PImg url={images[currentImg]||product.image_url} style={{aspectRatio:'1'}}/>
+              <div style={{position:'absolute',top:'10px',left:'10px',width:'20px',height:'20px',borderTop:'1.5px solid rgba(255,255,255,.25)',borderLeft:'1.5px solid rgba(255,255,255,.25)',pointerEvents:'none'}}/>
+              <div style={{position:'absolute',bottom:'10px',right:'10px',width:'20px',height:'20px',borderBottom:'1.5px solid rgba(255,255,255,.25)',borderRight:'1.5px solid rgba(255,255,255,.25)',pointerEvents:'none'}}/>
+              {images.length>1&&(
+                <>
+                  <button onClick={()=>setCurrentImg(p=>p===0?images.length-1:p-1)} style={{position:'absolute',left:'12px',top:'50%',transform:'translateY(-50%)',width:'36px',height:'36px',borderRadius:'50%',border:'1px solid rgba(255,255,255,.3)',background:'rgba(0,0,0,.6)',color:'#ffffff',fontSize:'18px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>‹</button>
+                  <button onClick={()=>setCurrentImg(p=>p===images.length-1?0:p+1)} style={{position:'absolute',right:'12px',top:'50%',transform:'translateY(-50%)',width:'36px',height:'36px',borderRadius:'50%',border:'1px solid rgba(255,255,255,.3)',background:'rgba(0,0,0,.6)',color:'#ffffff',fontSize:'18px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>›</button>
+                </>
+              )}
+            </div>
+            {images.length>1&&(
+              <div style={{display:'flex',gap:'8px',justifyContent:'center'}}>
+                {images.map((url,idx)=>(
+                  <button key={idx} onClick={()=>setCurrentImg(idx)} style={{width:'64px',height:'64px',borderRadius:'4px',overflow:'hidden',border:currentImg===idx?'2px solid var(--accent)':'1px solid rgba(255,255,255,.15)',background:'transparent',padding:0,cursor:'pointer',opacity:currentImg===idx?1:0.5,transition:'all .2s'}}>
+                    <img src={url} alt="" style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div>
             <div style={{fontFamily:'var(--fm)',fontSize:'8px',letterSpacing:'2px',color:'var(--afaint)',textTransform:'uppercase',marginBottom:'8px'}}>{product.type} — Handcrafted</div>
@@ -375,16 +396,21 @@ function Cart({navigate,cart,setCart}) {
 function Admin({navigate,products,onChange,usingSeed}) {
   const [authed,setAuthed]=useState(false),[pw,setPw]=useState(''),[pwErr,setPwErr]=useState(false);
   const [editing,setEditing]=useState(null);
-  const [form,setForm]=useState({name:'',type:'shirt',size:'M',price:'',description:'',image_url:''});
+  const [form,setForm]=useState({name:'',type:'shirt',size:'M',price:'',description:'',image_urls:['']});
   const [saving,setSaving]=useState(false),[saveErr,setSaveErr]=useState(null);
   const login=()=>{if(pw===ADMIN_PW){setAuthed(true);setPwErr(false)}else setPwErr(true)};
-  const reset=()=>setForm({name:'',type:'shirt',size:'M',price:'',description:'',image_url:''});
-  const startEdit=p=>{setEditing(p);setForm({name:p.name,type:p.type,size:p.size||'M',price:String(p.price),description:p.description||'',image_url:p.image_url||''})};
+  const reset=()=>setForm({name:'',type:'shirt',size:'M',price:'',description:'',image_urls:['']});
+  const startEdit=p=>{
+    setEditing(p);
+    const urls = p.image_url ? (p.image_url.includes(',') ? p.image_url.split(',') : [p.image_url]) : [''];
+    setForm({name:p.name,type:p.type,size:p.size||'M',price:String(p.price),description:p.description||'',image_urls:urls});
+  };
   const save=async()=>{
     if(!form.name.trim()||!form.price){setSaveErr('Name and price required.');return}
     setSaving(true);setSaveErr(null);
     try{
-      const payload={name:form.name.trim(),type:form.type,size:form.size.trim(),price:Number(form.price),description:form.description.trim(),image_url:form.image_url.trim(),active:true};
+      const imageUrl = form.image_urls.filter(url => url.trim()).join(',');
+      const payload={name:form.name.trim(),type:form.type,size:form.size.trim(),price:Number(form.price),description:form.description.trim(),image_url:imageUrl,active:true};
       if(editing)await sbUpdate(editing.id,payload);else await sbInsert(payload);
       const d=await sbFetch();if(d)onChange(d);
       setEditing(null);reset();
@@ -433,8 +459,26 @@ function Admin({navigate,products,onChange,usingSeed}) {
             <div><div style={{fontFamily:'var(--fm)',fontSize:'8px',color:'var(--tdim)',letterSpacing:'1px',marginBottom:'5px'}}>PRICE ($)</div><input type="number" value={form.price} onChange={e=>setForm(p=>({...p,price:e.target.value}))} placeholder="48" style={iS} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>  </div>
           </div>
           <div style={{marginBottom:'12px'}}><div style={{fontFamily:'var(--fm)',fontSize:'8px',color:'var(--tdim)',letterSpacing:'1px',marginBottom:'5px'}}>DESCRIPTION</div><input value={form.description} onChange={e=>setForm(p=>({...p,description:e.target.value}))} placeholder="Hand-bleached..." style={iS} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>  </div>
-          <div style={{marginBottom:'16px'}}><div style={{fontFamily:'var(--fm)',fontSize:'8px',color:'var(--tdim)',letterSpacing:'1px',marginBottom:'5px'}}>IMAGE URL</div><input value={form.image_url} onChange={e=>setForm(p=>({...p,image_url:e.target.value}))} placeholder="https://..." style={iS} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>  </div>
-          {form.image_url&&<div style={{marginBottom:'12px',display:'flex',alignItems:'center',gap:'10px'}}><div style={{fontFamily:'var(--fm)',fontSize:'8px',color:'var(--tdim)',letterSpacing:'1px'}}>PREVIEW</div><div style={{width:'48px',height:'48px',borderRadius:'4px',overflow:'hidden',border:'1px solid rgba(255,255,255,.15)'}}><img src={form.image_url} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>e.target.style.display='none'}/></div></div>}
+          <div style={{marginBottom:'16px'}}>
+            <div style={{fontFamily:'var(--fm)',fontSize:'8px',color:'var(--tdim)',letterSpacing:'1px',marginBottom:'8px'}}>IMAGE URLS</div>
+            {form.image_urls.map((url,idx)=>(
+              <div key={idx} style={{display:'flex',gap:'8px',marginBottom:'8px',alignItems:'center'}}>
+                <input value={url} onChange={e=>{const newUrls=[...form.image_urls];newUrls[idx]=e.target.value;setForm(p=>({...p,image_urls:newUrls}))}} placeholder={`Image ${idx+1} URL`} style={{...iS,flex:1}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>
+                {form.image_urls.length>1&&<button onClick={()=>setForm(p=>({...p,image_urls:p.image_urls.filter((_,i)=>i!==idx)}))} style={{fontFamily:'var(--fm)',fontSize:'10px',padding:'9px 12px',borderRadius:'3px',border:'1px solid rgba(255,255,255,.2)',color:'var(--tdim)',background:'rgba(255,255,255,.03)'}}>✕</button>}
+              </div>
+            ))}
+            <button onClick={()=>setForm(p=>({...p,image_urls:[...p.image_urls,'']}))} style={{fontFamily:'var(--fm)',fontSize:'9px',letterSpacing:'1px',padding:'6px 12px',borderRadius:'3px',border:'1px solid rgba(255,255,255,.15)',color:'var(--adim)',background:'rgba(255,255,255,.03)',marginTop:'4px'}}>+ ADD ANOTHER IMAGE</button>
+          </div>
+          {form.image_urls.filter(u=>u.trim()).length>0&&(
+            <div style={{marginBottom:'12px',display:'flex',gap:'10px',flexWrap:'wrap'}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:'8px',color:'var(--tdim)',letterSpacing:'1px',width:'100%',marginBottom:'4px'}}>PREVIEW</div>
+              {form.image_urls.filter(u=>u.trim()).map((url,idx)=>(
+                <div key={idx} style={{width:'48px',height:'48px',borderRadius:'4px',overflow:'hidden',border:'1px solid rgba(255,255,255,.15)'}}>
+                  <img src={url} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>e.target.style.display='none'}/>
+                </div>
+              ))}
+            </div>
+          )}
           {saveErr&&<div style={{fontFamily:'var(--fm)',fontSize:'10px',color:'var(--red)',marginBottom:'10px',letterSpacing:'1px'}}>{saveErr}</div>}
           <div style={{display:'flex',gap:'10px'}}>
             <button onClick={save} disabled={saving} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',padding:'9px 20px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.08)',color:'var(--accent)',opacity:saving?.5:1,cursor:saving?'default':'pointer'}}>{saving?'SAVING...':editing?'SAVE CHANGES':'ADD PRODUCT'}</button>
@@ -470,20 +514,17 @@ export default function App() {
       if(d&&d.length>0){setProducts(d);setUsingSeed(false)}
       else{setProducts(SEED);setUsingSeed(true)}
       setLoading(false);
-};
-  load();
-},[]);
+    };
+    load();
+  },[]);
 
-const navigate=useCallback((target,data=null)=>{
-  setTransitioning(true);
-  setTimeout(()=>{setPage(target);setPageData(data);setTransitioning(false)},320);
-},[]);
+  const navigate=useCallback((target,data=null)=>{
+    setTransitioning(true);
+    setTimeout(()=>{setPage(target);setPageData(data);setTransitioning(false)},320);
+  },[]);
 
-useEffect(() => {
-  window.navigate = navigate;
-}, [navigate]);
+  if(loading) return (<div><GS/><Landscape/><div style={{position:'relative',zIndex:1,height:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:'11px',color:'#6b6358',letterSpacing:'3px'}}>LOADING...</div></div></div>);
 
-if(loading) return (<div><GS/><Landscape/><div style={{position:'relative',zIndex:1,height:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{fontFamily:"'Share Tech Mono',monospace",fontSize:'11px',color:'#6b6358',letterSpacing:'3px'}}>LOADING...</div></div></div>);
   const page_component = ()=>{
     switch(page){
       case 'landing': return <Landing navigate={navigate}/>;
