@@ -356,8 +356,36 @@ function Custom({navigate,cart}) {
 
 // ─── CART ────────────────────────────────────────────────────────────────────
 function Cart({navigate,cart,setCart}) {
+  const [processing, setProcessing] = useState(false);
+  const [checkoutError, setCheckoutError] = useState(null);
   const total=cart.reduce((s,i)=>s+i.price,0);
   const rm=idx=>setCart(p=>p.filter((_,i)=>i!==idx));
+  
+  const handleCheckout = async () => {
+    setProcessing(true);
+    setCheckoutError(null);
+    
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Checkout failed');
+      }
+      
+      window.location.href = data.url;
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setCheckoutError(err.message || 'Checkout failed. Please try again.');
+      setProcessing(false);
+    }
+  };
+  
   return (
     <div className="pe" style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
       <Nav page="cart" navigate={navigate} cartCount={cart.length}/>
@@ -381,8 +409,11 @@ function Cart({navigate,cart,setCart}) {
             ))}
             <div style={{marginTop:'28px',paddingTop:'20px',borderTop:'1px solid rgba(255,255,255,.14)'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'24px'}}><span style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--tdim)'}}>TOTAL</span><span style={{fontFamily:'var(--fm)',fontSize:'22px',color:'var(--accent)'}}>${total}</span></div>
-              <button style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.07)',color:'var(--accent)',cursor:'pointer',transition:'all .3s'}} onMouseEnter={e=>e.target.style.background='rgba(255,255,255,.14)'} onMouseLeave={e=>e.target.style.background='rgba(255,255,255,.07)'}>PROCEED TO CHECKOUT</button>
-              <p style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',textAlign:'center',marginTop:'12px',letterSpacing:'1px'}}>Checkout via Stripe — coming soon</p>
+              {checkoutError && <div style={{fontFamily:'var(--fm)',fontSize:'10px',color:'var(--red)',marginBottom:'12px',letterSpacing:'1px'}}>{checkoutError}</div>}
+              <button onClick={handleCheckout} disabled={processing} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.07)',color:'var(--accent)',cursor:processing?'default':'pointer',opacity:processing?0.5:1,transition:'all .3s'}} onMouseEnter={e=>!processing&&(e.target.style.background='rgba(255,255,255,.14)')} onMouseLeave={e=>!processing&&(e.target.style.background='rgba(255,255,255,.07)')}>
+                {processing ? 'PROCESSING...' : 'PROCEED TO CHECKOUT'}
+              </button>
+              <p style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',textAlign:'center',marginTop:'12px',letterSpacing:'1px'}}>Secure checkout via Stripe</p>
             </div>
           </div>
         )}
