@@ -42,8 +42,8 @@ const SEED = [
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const TYPES=["All","shirt","sweatshirt","sweatpants","jacket","crewneck","socks","jeans"];
 const C_TYPES=["shirt","sweatshirt","sweatpants","jacket","crewneck","socks","jeans"];
-const S_COLORS=[{name:"Black",hex:"#0a0a0a"},{name:"Charcoal",hex:"#2a2a2a"},{name:"Slate",hex:"#3a3a3a"},{name:"Grey",hex:"#5a5a5a"},{name:"Steel",hex:"#6a6a6a"},{name:"Ash",hex:"#7a7a7a"},{name:"Silver",hex:"#9a9a9a"},{name:"Smoke",hex:"#b0b0b0"},{name:"Cloud",hex:"#c8c8c8"},{name:"Pearl",hex:"#d8d8d8"},{name:"Frost",hex:"#e8e8e8"},{name:"White",hex:"#f5f5f5"}];
-const A_COLORS=[{name:"None",hex:null},{name:"White",hex:"#ffffff"},{name:"Light Grey",hex:"#cccccc"},{name:"Silver",hex:"#a8a8a8"},{name:"Grey",hex:"#888888"},{name:"Dark Grey",hex:"#555555"},{name:"Charcoal",hex:"#333333"},{name:"Black",hex:"#0a0a0a"}];
+const S_COLORS=[{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#B8860B"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Charcoal",hex:"#2a2a2a"},{name:"Slate",hex:"#3a3a3a"},{name:"Grey",hex:"#5a5a5a"},{name:"Steel",hex:"#6a6a6a"},{name:"Ash",hex:"#7a7a7a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
+const A_COLORS=[{name:"None",hex:null},{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#B8860B"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Grey",hex:"#5a5a5a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
 const VIBES=["Cross","Spiderweb","Chain","Flame","Moon","Serpent","Moth","Thorn Rose","Skull","Eye","Pine Tree","Bones","Leaf","Crow","Dagger","Pentagram","Wings","Raven","Thorns","Eclipse","Ivy","Smoke","Sigil","Feather"];
 const SIZES_MAP={shirt:["S","M","L","XL","XXL"],sweatshirt:["S","M","L","XL","XXL"],sweatpants:["S","M","L","XL","XXL"],jacket:["S","M","L","XL"],crewneck:["S","M","L","XL","XXL"],socks:["One Size"],jeans:["28","30","32","34","36","38"]};
 const BASE_P={shirt:48,sweatshirt:72,sweatpants:58,jacket:120,crewneck:68,socks:18,jeans:85};
@@ -53,9 +53,10 @@ const sRand=(seed)=>{let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/21
 // ─── STYLES ──────────────────────────────────────────────────────────────────
 const GS=()=>(
 <style>{`
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Special+Elite&family=Share+Tech+Mono&family=Patrick+Hand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Share+Tech+Mono&family=Patrick+Hand&display=swap');
+@import url('https://fonts.cdnfonts.com/css/perfecto-calligraphy');
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--black:#0a0a0a;--deep:#0e0e0e;--accent:#ffffff;--adim:#cccccc;--afaint:#999999;--red:#ffffff;--txt:#d0d0d0;--tdim:#888888;--fc:'Great Vibes',cursive;--fb:'Special Elite',cursive;--fm:'Share Tech Mono',monospace;--fh:'Patrick Hand',cursive}
+:root{--black:#0a0a0a;--deep:#0e0e0e;--accent:#ffffff;--adim:#cccccc;--afaint:#999999;--red:#ffffff;--txt:#d0d0d0;--tdim:#888888;--fc:'Perfecto Calligraphy',cursive;--fb:'Special Elite',cursive;--fm:'Share Tech Mono',monospace;--fh:'Patrick Hand',cursive}
 body{background:var(--black);color:var(--txt);font-family:var(--fb);overflow-x:hidden;min-height:100vh}
 body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.1) 3px,rgba(0,0,0,.1) 4px)}
@@ -154,16 +155,22 @@ function Landing({navigate}) {
       <div style={{textAlign:'center',position:'relative',zIndex:15}}>
         <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'2px'}}>Blackbird</h1>
         <h1 style={{fontFamily:'var(--fc)',fontSize:'clamp(54px,10.5vw,104px)',fontWeight:400,color:'var(--accent)',lineHeight:1.15,letterSpacing:'2px',textShadow:'0 0 60px rgba(255,255,255,.1)',marginBottom:'46px'}}>Exclusives</h1>
-        {showBtn&&<button onClick={()=>navigate('catalog')} style={{fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',color:'var(--adim)',padding:'11px 30px',border:'1px solid rgba(255,255,255,.22)',borderRadius:'2px',background:'rgba(255,255,255,.04)',transition:'all .35s',animation:'fadeUp .6s cubic-bezier(.22,1,.36,1) forwards'}}
-          onMouseEnter={e=>{e.target.style.borderColor='rgba(255,255,255,.45)';e.target.style.color='var(--accent)';e.target.style.background='rgba(255,255,255,.08)'}}
-          onMouseLeave={e=>{e.target.style.borderColor='rgba(255,255,255,.22)';e.target.style.color='var(--adim)';e.target.style.background='rgba(255,255,255,.04)'}}>ENTER ARCHIVE</button>}
-</div>
+        {showBtn&&<div style={{display:'flex',flexDirection:'column',gap:'14px',alignItems:'center'}}>
+          <button onClick={()=>navigate('catalog')} style={{fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',color:'var(--adim)',padding:'11px 30px',border:'1px solid rgba(255,255,255,.22)',borderRadius:'2px',background:'rgba(255,255,255,.04)',transition:'all .35s',animation:'fadeUp .6s cubic-bezier(.22,1,.36,1) forwards'}}
+            onMouseEnter={e=>{e.target.style.borderColor='rgba(255,255,255,.45)';e.target.style.color='var(--accent)';e.target.style.background='rgba(255,255,255,.08)'}}
+            onMouseLeave={e=>{e.target.style.borderColor='rgba(255,255,255,.22)';e.target.style.color='var(--adim)';e.target.style.background='rgba(255,255,255,.04)'}}>ENTER ARCHIVE</button>
+          <button onClick={()=>navigate('custom')} style={{fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',color:'var(--adim)',padding:'11px 30px',border:'1px solid rgba(255,255,255,.22)',borderRadius:'2px',background:'rgba(255,255,255,.04)',transition:'all .35s',animation:'fadeUp .7s cubic-bezier(.22,1,.36,1) forwards'}}
+            onMouseEnter={e=>{e.target.style.borderColor='rgba(255,255,255,.45)';e.target.style.color='var(--accent)';e.target.style.background='rgba(255,255,255,.08)'}}
+            onMouseLeave={e=>{e.target.style.borderColor='rgba(255,255,255,.22)';e.target.style.color='var(--adim)';e.target.style.background='rgba(255,255,255,.04)'}}>CUSTOM ORDER</button>
+        </div>}
+      </div>
     </div>
   );
 }
+
 // ─── NAV ─────────────────────────────────────────────────────────────────────
 function Nav({page,navigate,cartCount}) {
-  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`},{id:'admin',label:'ADMIN'}];
+  const tabs=[{id:'catalog',label:'CATALOG'},{id:'custom',label:'CUSTOM'},{id:'cart',label:`CART (${cartCount})`}];
   return (
     <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(10,10,10,.88)',backdropFilter:'blur(14px)',borderBottom:'1px solid rgba(255,255,255,.07)',padding:'0 28px'}}>
       <div style={{maxWidth:'1100px',margin:'0 auto',height:'54px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
@@ -356,36 +363,8 @@ function Custom({navigate,cart}) {
 
 // ─── CART ────────────────────────────────────────────────────────────────────
 function Cart({navigate,cart,setCart}) {
-  const [processing, setProcessing] = useState(false);
-  const [checkoutError, setCheckoutError] = useState(null);
   const total=cart.reduce((s,i)=>s+i.price,0);
   const rm=idx=>setCart(p=>p.filter((_,i)=>i!==idx));
-  
-  const handleCheckout = async () => {
-    setProcessing(true);
-    setCheckoutError(null);
-    
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Checkout failed');
-      }
-      
-      window.location.href = data.url;
-    } catch (err) {
-      console.error('Checkout error:', err);
-      setCheckoutError(err.message || 'Checkout failed. Please try again.');
-      setProcessing(false);
-    }
-  };
-  
   return (
     <div className="pe" style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
       <Nav page="cart" navigate={navigate} cartCount={cart.length}/>
@@ -409,11 +388,8 @@ function Cart({navigate,cart,setCart}) {
             ))}
             <div style={{marginTop:'28px',paddingTop:'20px',borderTop:'1px solid rgba(255,255,255,.14)'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'24px'}}><span style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--tdim)'}}>TOTAL</span><span style={{fontFamily:'var(--fm)',fontSize:'22px',color:'var(--accent)'}}>${total}</span></div>
-              {checkoutError && <div style={{fontFamily:'var(--fm)',fontSize:'10px',color:'var(--red)',marginBottom:'12px',letterSpacing:'1px'}}>{checkoutError}</div>}
-              <button onClick={handleCheckout} disabled={processing} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.07)',color:'var(--accent)',cursor:processing?'default':'pointer',opacity:processing?0.5:1,transition:'all .3s'}} onMouseEnter={e=>!processing&&(e.target.style.background='rgba(255,255,255,.14)')} onMouseLeave={e=>!processing&&(e.target.style.background='rgba(255,255,255,.07)')}>
-                {processing ? 'PROCESSING...' : 'PROCEED TO CHECKOUT'}
-              </button>
-              <p style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',textAlign:'center',marginTop:'12px',letterSpacing:'1px'}}>Secure checkout via Stripe</p>
+              <button style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.07)',color:'var(--accent)',cursor:'pointer',transition:'all .3s'}} onMouseEnter={e=>e.target.style.background='rgba(255,255,255,.14)'} onMouseLeave={e=>e.target.style.background='rgba(255,255,255,.07)'}>PROCEED TO CHECKOUT</button>
+              <p style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',textAlign:'center',marginTop:'12px',letterSpacing:'1px'}}>Checkout via Stripe — coming soon</p>
             </div>
           </div>
         )}
