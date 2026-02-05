@@ -42,7 +42,7 @@ const SEED = [
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const TYPES=["All","shirt","sweatshirt","sweatpants","jacket","crewneck","socks","jeans"];
 const C_TYPES=["shirt","sweatshirt","sweatpants","jacket","crewneck","socks","jeans"];
-const S_COLORS=[{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#B8860B"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Charcoal",hex:"#2a2a2a"},{name:"Slate",hex:"#3a3a3a"},{name:"Grey",hex:"#5a5a5a"},{name:"Steel",hex:"#6a6a6a"},{name:"Ash",hex:"#7a7a7a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
+const S_COLORS=[{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#B8860B"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Charcoal",hex:"#2a2a2a"},{name:"Slate",hex:"#3a3a3a"},{name:"Grey",hex:"#5a5a5a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
 const A_COLORS=[{name:"None",hex:null},{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#B8860B"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Grey",hex:"#5a5a5a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
 const VIBES=["Cross","Spiderweb","Chain","Flame","Moon","Serpent","Moth","Thorn Rose","Skull","Eye","Pine Tree","Bones","Leaf","Crow","Dagger","Pentagram","Wings","Raven","Thorns","Eclipse","Ivy","Smoke","Sigil","Feather"];
 const SIZES_MAP={shirt:["S","M","L","XL","XXL"],sweatshirt:["S","M","L","XL","XXL"],sweatpants:["S","M","L","XL","XXL"],jacket:["S","M","L","XL"],crewneck:["S","M","L","XL","XXL"],socks:["One Size"],jeans:["28","30","32","34","36","38"]};
@@ -219,7 +219,13 @@ function Product({product,navigate,cart,setCart}) {
   const [added,setAdded]=useState(false);
   const images = product.image_url ? (product.image_url.includes(',') ? product.image_url.split(',').filter(u=>u.trim()) : [product.image_url]) : [];
   const [currentImg,setCurrentImg]=useState(0);
-  const add=()=>{setCart(prev=>[...prev,{...product}]);setAdded(true);setTimeout(()=>setAdded(false),1600)};
+  const inCart = cart.some(item => item.id === product.id && !item.isCustom);
+  const add=()=>{
+    if(inCart) return;
+    setCart(prev=>[...prev,{...product}]);
+    setAdded(true);
+    setTimeout(()=>setAdded(false),1600);
+  };
   return (
     <div className="pe" style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
       <Nav page="catalog" navigate={navigate} cartCount={cart.length}/>
@@ -261,7 +267,7 @@ function Product({product,navigate,cart,setCart}) {
               <div style={{fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'1px',padding:'6px 14px',borderRadius:'3px',border:'1px solid rgba(255,255,255,.2)',background:'rgba(255,255,255,.06)',color:'var(--accent)'}}>{product.size}</div>
               <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',letterSpacing:'1px'}}>— one of a kind</div>
             </div>
-            <button onClick={add} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'13px',borderRadius:'3px',border:added?'1px solid #4a9a5a':'1px solid var(--adim)',background:added?'rgba(74,154,90,.12)':'rgba(255,255,255,.07)',color:added?'#4a9a5a':'var(--accent)',transition:'all .3s',cursor:'pointer'}}>{added?'✓  ADDED':'ADD TO CART'}</button>
+            <button onClick={add} disabled={inCart} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'13px',borderRadius:'3px',border:added?'1px solid #4a9a5a':inCart?'1px solid rgba(255,255,255,.2)':'1px solid var(--adim)',background:added?'rgba(74,154,90,.12)':inCart?'rgba(255,255,255,.03)':'rgba(255,255,255,.07)',color:added?'#4a9a5a':inCart?'var(--tdim)':'var(--accent)',transition:'all .3s',cursor:inCart?'not-allowed':'pointer',opacity:inCart?0.5:1}}>{added?'✓  ADDED':inCart?'ALREADY IN CART':'ADD TO CART'}</button>
           </div>
         </div>
       </div>
@@ -270,34 +276,47 @@ function Product({product,navigate,cart,setCart}) {
 }
 
 // ─── CUSTOM ──────────────────────────────────────────────────────────────────
-function Custom({navigate,cart}) {
-  const [cfg,setCfg]=useState({type:null,size:null,color:null,accent:null,symbol:null,ct:''});
-  const [submitted,setSubmitted]=useState(false);
-  const [submitting,setSubmitting]=useState(false);
-  const [err,setErr]=useState(null);
+function Custom({navigate,cart,setCart}) {
+  const [cfg,setCfg]=useState({type:null,size:null,color:null,accent:null,symbol:null,ct:'',notes:''});
+  const [added,setAdded]=useState(false);
   const [useCT,setUseCT]=useState(false);
   const symDone=cfg.symbol!==null||(useCT&&cfg.ct.trim().length>0);
   const allDone=cfg.type&&cfg.size&&cfg.color&&cfg.accent!==null&&symDone;
   const price=cfg.type?BASE_P[cfg.type]*2:0;
   const set=(f,v)=>setCfg(p=>{const n={...p,[f]:v};if(f==='type')n.size=null;return n});
 
-  const submit=async()=>{
-    setSubmitting(true);setErr(null);
-    try {
-      const r=await fetch('https://n8n.srv1122720.hstgr.cloud/webhook/0ee795bb-fb4e-4584-9b7f-eb91c8d132b9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'custom_order',piece_type:cfg.type,size:cfg.size,shirt_color:cfg.color,accent_color:cfg.accent,symbol:useCT?cfg.ct.trim():cfg.symbol,price:price,timestamp:new Date().toISOString()})});
-      if(r.ok)setSubmitted(true);else setErr('Submission failed.');
-    } catch(e){setErr('Network error.');}
-    setSubmitting(false);
+  const addToCart=()=>{
+    const symbolText = useCT ? cfg.ct.trim() : cfg.symbol;
+    const customProduct = {
+      id: `custom-${Date.now()}`,
+      name: `Custom ${cfg.type.charAt(0).toUpperCase() + cfg.type.slice(1)}`,
+      type: cfg.type,
+      size: cfg.size,
+      price: price,
+      description: `Type: ${cfg.type} | Size: ${cfg.size} | Shirt Color: ${cfg.color} | Accent Color: ${cfg.accent} | Symbol/Vibe: ${symbolText}${cfg.notes.trim() ? ` | Notes: ${cfg.notes.trim()}` : ''}`,
+      image_url: '',
+      isCustom: true
+    };
+    setCart(prev=>[...prev,customProduct]);
+    setAdded(true);
+    setTimeout(()=>{
+      setAdded(false);
+      setCfg({type:null,size:null,color:null,accent:null,symbol:null,ct:'',notes:''});
+      setUseCT(false);
+    },1600);
   };
 
-  if(submitted) return (
+  if(added) return (
     <div className="pe" style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
       <Nav page="custom" navigate={navigate} cartCount={cart.length}/>
       <div style={{maxWidth:'560px',margin:'0 auto',padding:'130px 28px',textAlign:'center'}}>
         <div style={{width:'56px',height:'56px',borderRadius:'50%',border:'1px solid var(--adim)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 28px',fontSize:'22px',color:'var(--accent)'}}>✓</div>
-        <h2 style={{fontFamily:'var(--fc)',fontSize:'38px',color:'var(--accent)',marginBottom:'14px'}}>Order Received</h2>
-        <p style={{fontFamily:'var(--fb)',fontSize:'13px',color:'var(--tdim)',lineHeight:1.7,marginBottom:'8px'}}>Your custom {cfg.type} has been logged. Est. turnaround: 7-14 days. Total: <span style={{color:'var(--accent)'}}>${price}</span></p>
-        <button onClick={()=>{setSubmitted(false);setCfg({type:null,size:null,color:null,accent:null,symbol:null,ct:''});setUseCT(false)}} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--adim)',border:'1px solid rgba(255,255,255,.18)',padding:'9px 22px',borderRadius:'3px',background:'rgba(255,255,255,.04)',marginTop:'24px'}}>START ANOTHER</button>
+        <h2 style={{fontFamily:'var(--fc)',fontSize:'38px',color:'var(--accent)',marginBottom:'14px'}}>Added to Cart</h2>
+        <p style={{fontFamily:'var(--fb)',fontSize:'13px',color:'var(--tdim)',lineHeight:1.7,marginBottom:'8px'}}>Your custom {cfg.type} has been added to your cart. Price: <span style={{color:'var(--accent)'}}>${price}</span></p>
+        <div style={{display:'flex',gap:'12px',justifyContent:'center',marginTop:'24px'}}>
+          <button onClick={()=>navigate('cart')} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--accent)',border:'1px solid var(--adim)',padding:'9px 22px',borderRadius:'3px',background:'rgba(255,255,255,.08)'}}>VIEW CART</button>
+          <button onClick={()=>{setAdded(false);setCfg({type:null,size:null,color:null,accent:null,symbol:null,ct:'',notes:''});setUseCT(false)}} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--adim)',border:'1px solid rgba(255,255,255,.18)',padding:'9px 22px',borderRadius:'3px',background:'rgba(255,255,255,.04)'}}>CREATE ANOTHER</button>
+        </div>
       </div>
     </div>
   );
@@ -310,7 +329,7 @@ function Custom({navigate,cart}) {
       <div style={{display:'flex',alignItems:'center',gap:'9px',marginBottom:'12px'}}>
         <div style={{width:'20px',height:'20px',borderRadius:'50%',flexShrink:0,border:done?'1px solid var(--adim)':'1px solid rgba(255,255,255,.2)',background:done?'rgba(255,255,255,.1)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--fm)',fontSize:'9px',color:done?'var(--accent)':'var(--tdim)',transition:'all .3s'}}>{done?'✓':idx+1}</div>
         <span style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:done?'var(--adim)':'var(--tdim)'}}>{label}</span>
-        {done&&field!=='symbol'&&<span style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--afaint)',marginLeft:'auto'}}>{cfg[field]||''}</span>}
+        {done&&field!=='symbol'&&field!=='notes'&&<span style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--afaint)',marginLeft:'auto'}}>{cfg[field]||''}</span>}
       </div>
       {active&&children}
     </div>
@@ -322,7 +341,7 @@ function Custom({navigate,cart}) {
       <div style={{maxWidth:'720px',margin:'0 auto',padding:'44px 28px'}}>
         <div style={{marginBottom:'36px'}}><div style={{fontFamily:'var(--fm)',fontSize:'10px',color:'var(--tdim)',letterSpacing:'3px',marginBottom:'6px'}}>▸ ARCHIVE / CUSTOM</div><h2 style={{fontFamily:'var(--fc)',fontSize:'42px',color:'var(--accent)',fontWeight:400}}>Build Your Own</h2><p style={{fontFamily:'var(--fb)',fontSize:'12px',color:'var(--tdim)',marginTop:'6px',lineHeight:1.6}}>Design a one-of-a-kind piece. Custom orders are 2x base price — turnaround is 7-14 days.</p></div>
         <div style={{display:'flex',gap:'3px',marginBottom:'34px'}}>
-          {['type','size','color','accent','symbol'].map(s=>{const done=s==='symbol'?symDone:cfg[s]!==null;return<div key={s} style={{flex:1,height:'2px',borderRadius:'1px',background:done?'var(--adim)':'rgba(255,255,255,.1)',transition:'background .4s'}}/>})}
+          {['type','size','color','accent','symbol','notes'].map(s=>{const done=s==='symbol'?symDone:s==='notes'?true:cfg[s]!==null;return<div key={s} style={{flex:1,height:'2px',borderRadius:'1px',background:done?'var(--adim)':'rgba(255,255,255,.1)',transition:'background .4s'}}/>})}
         </div>
         <Step idx={0} field="type" label="PIECE TYPE" done={!!cfg.type} active={true}>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(110px,1fr))',gap:'7px'}}>{C_TYPES.map(t=><Pill key={t} label={t} sel={cfg.type===t} onClick={()=>set('type',t)}/>)}</div>
@@ -348,13 +367,18 @@ function Custom({navigate,cart}) {
             </div>
           </div>}
         </Step>
+        <Step idx={5} field="notes" label="NOTES (OPTIONAL)" done={true} active={symDone}>
+          {symDone&&<div>
+            <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',marginBottom:'8px',letterSpacing:'1px'}}>Any special requests or details?</div>
+            <textarea placeholder="E.g., darker shade, more distressed look, specific placement..." value={cfg.notes} onChange={e=>setCfg(p=>({...p,notes:e.target.value}))} style={{width:'100%',minHeight:'80px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'11px',transition:'border-color .3s',resize:'vertical'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>
+          </div>}
+        </Step>
         {allDone&&<div style={{marginTop:'32px',paddingTop:'22px',borderTop:'1px solid rgba(255,255,255,.1)'}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:'18px'}}>
             <div><div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',letterSpacing:'1px',marginBottom:'4px'}}>CUSTOM ORDER TOTAL</div><div style={{fontFamily:'var(--fm)',fontSize:'26px',color:'var(--accent)'}}>${price}</div></div>
             <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',textAlign:'right',lineHeight:1.9}}><div>Base ${BASE_P[cfg.type]} x 2</div><div>Est. 7-14 days</div></div>
           </div>
-          {err&&<div style={{fontFamily:'var(--fm)',fontSize:'10px',color:'var(--red)',marginBottom:'10px',letterSpacing:'1px'}}>{err}</div>}
-          <button onClick={submit} disabled={submitting} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.08)',color:'var(--accent)',opacity:submitting?.5:1,cursor:submitting?'default':'pointer',transition:'all .3s'}}>{submitting?'SUBMITTING...':'SUBMIT CUSTOM ORDER'}</button>
+          <button onClick={addToCart} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.08)',color:'var(--accent)',cursor:'pointer',transition:'all .3s'}}>ADD TO CART</button>
         </div>}
       </div>
     </div>
@@ -365,7 +389,9 @@ function Custom({navigate,cart}) {
 function Cart({navigate,cart,setCart}) {
   const [processing, setProcessing] = useState(false);
   const [checkoutError, setCheckoutError] = useState(null);
-  const total=cart.reduce((s,i)=>s+i.price,0);
+  const subtotal=cart.reduce((s,i)=>s+i.price,0);
+  const shipping=cart.length * 10;
+  const total=subtotal + shipping;
   const rm=idx=>setCart(p=>p.filter((_,i)=>i!==idx));
   
   const handleCheckout = async () => {
@@ -406,7 +432,12 @@ function Cart({navigate,cart,setCart}) {
               <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'18px 0',borderBottom:'1px solid rgba(255,255,255,.07)',animation:`pageIn .4s cubic-bezier(.22,1,.36,1) ${i*.07}s both`}}>
                 <div style={{display:'flex',alignItems:'center',gap:'16px'}}>
                   <PImg url={item.image_url} style={{width:'56px',height:'56px',flexShrink:0}}/>
-                  <div><div style={{fontFamily:'var(--fc)',fontSize:'19px',color:'var(--accent)'}}>{item.name}</div><div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',letterSpacing:'1px',marginTop:'3px'}}>SIZE: {item.size} — {item.type.toUpperCase()}</div></div>
+                  <div>
+                    <div style={{fontFamily:'var(--fc)',fontSize:'19px',color:'var(--accent)'}}>{item.name}</div>
+                    <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',letterSpacing:'1px',marginTop:'3px'}}>
+                      {item.isCustom ? item.description : `SIZE: ${item.size} — ${item.type.toUpperCase()}`}
+                    </div>
+                  </div>
                 </div>
                 <div style={{display:'flex',alignItems:'center',gap:'18px'}}>
                   <span style={{fontFamily:'var(--fm)',fontSize:'15px',color:'var(--accent)'}}>${item.price}</span>
@@ -415,6 +446,8 @@ function Cart({navigate,cart,setCart}) {
               </div>
             ))}
             <div style={{marginTop:'28px',paddingTop:'20px',borderTop:'1px solid rgba(255,255,255,.14)'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}><span style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--tdim)'}}>SUBTOTAL</span><span style={{fontFamily:'var(--fm)',fontSize:'16px',color:'var(--accent)'}}>${subtotal}</span></div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'18px',paddingBottom:'18px',borderBottom:'1px solid rgba(255,255,255,.07)'}}><span style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--tdim)'}}>SHIPPING ({cart.length} item{cart.length !== 1 ? 's' : ''} × $10)</span><span style={{fontFamily:'var(--fm)',fontSize:'16px',color:'var(--accent)'}}>${shipping}</span></div>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'24px'}}><span style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--tdim)'}}>TOTAL</span><span style={{fontFamily:'var(--fm)',fontSize:'22px',color:'var(--accent)'}}>${total}</span></div>
               {checkoutError && <div style={{fontFamily:'var(--fm)',fontSize:'10px',color:'var(--red)',marginBottom:'12px',letterSpacing:'1px'}}>{checkoutError}</div>}
               <button onClick={handleCheckout} disabled={processing} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.07)',color:'var(--accent)',cursor:processing?'default':'pointer',opacity:processing?0.5:1,transition:'all .3s'}} onMouseEnter={e=>!processing&&(e.target.style.background='rgba(255,255,255,.14)')} onMouseLeave={e=>!processing&&(e.target.style.background='rgba(255,255,255,.07)')}>
@@ -567,7 +600,7 @@ export default function App() {
       case 'landing': return <Landing navigate={navigate}/>;
       case 'catalog': return <Catalog navigate={navigate} cart={cart} setCart={setCart} products={products}/>;
       case 'product': return pageData?<Product product={pageData} navigate={navigate} cart={cart} setCart={setCart}/>:<Catalog navigate={navigate} cart={cart} setCart={setCart} products={products}/>;
-      case 'custom':  return <Custom navigate={navigate} cart={cart}/>;
+      case 'custom':  return <Custom navigate={navigate} cart={cart} setCart={setCart}/>;
       case 'cart':    return <Cart navigate={navigate} cart={cart} setCart={setCart}/>;
       case 'admin':   return <Admin navigate={navigate} products={products} onChange={setProducts} usingSeed={usingSeed}/>;
       default:        return <Landing navigate={navigate}/>;
