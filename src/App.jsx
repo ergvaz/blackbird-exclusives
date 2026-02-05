@@ -357,18 +357,19 @@ function Custom({navigate,cart,setCart}) {
           {cfg.accent!==null&&<div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(110px,1fr))',gap:'7px',marginBottom:'14px'}}>{VIBES.map(s=><Pill key={s} label={s} sel={!useCT&&cfg.symbol===s} onClick={()=>{set('symbol',s);setUseCT(false)}}/>)}</div>
             <div style={{marginTop:'18px',paddingTop:'16px',borderTop:'1px solid rgba(255,255,255,.07)'}}>
-              <button type="button" tabIndex={-1} onClick={()=>{setUseCT(!useCT);if(!useCT)set('symbol',null)}} style={{display:'flex',alignItems:'center',gap:'8px',fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1.5px',color:useCT?'var(--accent)':'var(--tdim)',transition:'color .2s',marginBottom:useCT?'12px':'0'}}>
+              <label style={{display:'flex',alignItems:'center',gap:'8px',fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1.5px',color:useCT?'var(--accent)':'var(--tdim)',transition:'color .2s',marginBottom:useCT?'12px':'0',cursor:'pointer'}}>
+                <input type="checkbox" checked={useCT} onChange={e=>{setUseCT(e.target.checked);if(!e.target.checked){set('symbol',null);setCfg(p=>({...p,ct:''}))}}} style={{display:'none'}}/>
                 <div style={{width:'16px',height:'16px',borderRadius:'3px',border:'1px solid '+(useCT?'var(--adim)':'rgba(255,255,255,.2)'),background:useCT?'rgba(255,255,255,.12)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',color:useCT?'var(--accent)':'transparent'}}>✓</div>
                 USE CUSTOM TEXT INSTEAD
-              </button>
-              {useCT&&<input type="text" placeholder="Type your symbol or word..." value={cfg.ct} onChange={e=>setCfg(p=>({...p,ct:e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'12px',transition:'border-color .3s'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>}
+              </label>
+              {useCT&&<input key={`ct-${useCT}`} type="text" placeholder="Type your symbol or word..." defaultValue={cfg.ct} onBlur={e=>setCfg(p=>({...p,ct:e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'12px',transition:'border-color .3s'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,.18)';setCfg(p=>({...p,ct:e.target.value}))}}/>}
             </div>
           </div>}
         </Step>
         <Step idx={5} field="notes" label="NOTES (OPTIONAL)" done={true} active={symDone}>
           {symDone&&<div>
             <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',marginBottom:'8px',letterSpacing:'1px'}}>Any special requests or details?</div>
-            <textarea placeholder="E.g., darker shade, more distressed look, specific placement..." value={cfg.notes} onChange={e=>setCfg(p=>({...p,notes:e.target.value}))} style={{width:'100%',minHeight:'80px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'11px',transition:'border-color .3s',resize:'vertical'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>
+            <textarea key={`notes-${symDone}`} placeholder="E.g., darker shade, more distressed look, specific placement..." defaultValue={cfg.notes} onBlur={e=>setCfg(p=>({...p,notes:e.target.value}))} style={{width:'100%',minHeight:'80px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'11px',transition:'border-color .3s',resize:'vertical'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>{e.target.style.borderColor='rgba(255,255,255,.18)';setCfg(p=>({...p,notes:e.target.value}))}}/>
           </div>}
         </Step>
         {allDone&&<div style={{marginTop:'32px',paddingTop:'22px',borderTop:'1px solid rgba(255,255,255,.1)'}}>
