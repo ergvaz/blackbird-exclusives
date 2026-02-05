@@ -42,7 +42,7 @@ const SEED = [
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const TYPES=["All","shirt","sweatshirt","sweatpants","jacket","crewneck","socks","jeans"];
 const C_TYPES=["shirt","sweatshirt","sweatpants","jacket","crewneck","socks","jeans"];
-const S_COLORS=[{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#B8860B"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Charcoal",hex:"#2a2a2a"},{name:"Slate",hex:"#3a3a3a"},{name:"Grey",hex:"#5a5a5a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
+const S_COLORS=[{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#FFD700"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Slate",hex:"#3a3a3a"},{name:"Grey",hex:"#4a4a4a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
 const A_COLORS=[{name:"None",hex:null},{name:"Red",hex:"#8B0000"},{name:"Orange",hex:"#D2691E"},{name:"Yellow",hex:"#B8860B"},{name:"Green",hex:"#2F4F2F"},{name:"Blue",hex:"#1e3a5f"},{name:"Purple",hex:"#4B0082"},{name:"Black",hex:"#0a0a0a"},{name:"Grey",hex:"#5a5a5a"},{name:"Tan",hex:"#8B7355"},{name:"Brown",hex:"#5C4033"}];
 const VIBES=["Cross","Spiderweb","Chain","Flame","Moon","Serpent","Moth","Thorn Rose","Skull","Eye","Pine Tree","Bones","Leaf","Crow","Dagger","Pentagram","Wings","Raven","Thorns","Eclipse","Ivy","Smoke","Sigil","Feather"];
 const SIZES_MAP={shirt:["S","M","L","XL","XXL"],sweatshirt:["S","M","L","XL","XXL"],sweatpants:["S","M","L","XL","XXL"],jacket:["S","M","L","XL"],crewneck:["S","M","L","XL","XXL"],socks:["One Size"],jeans:["28","30","32","34","36","38"]};
@@ -299,22 +299,19 @@ function Custom({navigate,cart,setCart}) {
     };
     setCart(prev=>[...prev,customProduct]);
     setAdded(true);
-    setTimeout(()=>{
-      setAdded(false);
-      setCfg({type:null,size:null,color:null,accent:null,symbol:null,ct:'',notes:''});
-      setUseCT(false);
-    },1600);
   };
 
   if(added) return (
     <div className="pe" style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
       <Nav page="custom" navigate={navigate} cartCount={cart.length}/>
-      <div style={{maxWidth:'560px',margin:'0 auto',padding:'130px 28px',textAlign:'center'}}>
+      <div style={{maxWidth:'560px',margin:'0 auto',padding:'130px 28px',textAlign:'center',position:'relative'}}>
+        <button onClick={()=>{setAdded(false);setCfg({type:null,size:null,color:null,accent:null,symbol:null,ct:'',notes:''});setUseCT(false)}} style={{position:'absolute',top:'100px',right:'28px',width:'32px',height:'32px',borderRadius:'50%',border:'1px solid rgba(255,255,255,.2)',background:'rgba(255,255,255,.05)',color:'var(--tdim)',fontSize:'16px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all .2s'}} onMouseEnter={e=>{e.target.style.borderColor='var(--adim)';e.target.style.color='var(--accent)'}} onMouseLeave={e=>{e.target.style.borderColor='rgba(255,255,255,.2)';e.target.style.color='var(--tdim)'}}>✕</button>
         <div style={{width:'56px',height:'56px',borderRadius:'50%',border:'1px solid var(--adim)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 28px',fontSize:'22px',color:'var(--accent)'}}>✓</div>
         <h2 style={{fontFamily:'var(--fc)',fontSize:'38px',color:'var(--accent)',marginBottom:'14px'}}>Added to Cart</h2>
         <p style={{fontFamily:'var(--fb)',fontSize:'13px',color:'var(--tdim)',lineHeight:1.7,marginBottom:'8px'}}>Your custom {cfg.type} has been added to your cart. Price: <span style={{color:'var(--accent)'}}>${price}</span></p>
-        <div style={{display:'flex',gap:'12px',justifyContent:'center',marginTop:'24px'}}>
+        <div style={{display:'flex',gap:'12px',justifyContent:'center',marginTop:'24px',flexWrap:'wrap'}}>
           <button onClick={()=>navigate('cart')} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--accent)',border:'1px solid var(--adim)',padding:'9px 22px',borderRadius:'3px',background:'rgba(255,255,255,.08)'}}>VIEW CART</button>
+          <button onClick={()=>navigate('catalog')} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--adim)',border:'1px solid rgba(255,255,255,.18)',padding:'9px 22px',borderRadius:'3px',background:'rgba(255,255,255,.04)'}}>BROWSE ARCHIVE</button>
           <button onClick={()=>{setAdded(false);setCfg({type:null,size:null,color:null,accent:null,symbol:null,ct:'',notes:''});setUseCT(false)}} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'2px',color:'var(--adim)',border:'1px solid rgba(255,255,255,.18)',padding:'9px 22px',borderRadius:'3px',background:'rgba(255,255,255,.04)'}}>CREATE ANOTHER</button>
         </div>
       </div>
@@ -363,14 +360,14 @@ function Custom({navigate,cart,setCart}) {
                 <div style={{width:'16px',height:'16px',borderRadius:'3px',border:'1px solid '+(useCT?'var(--adim)':'rgba(255,255,255,.2)'),background:useCT?'rgba(255,255,255,.12)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',color:useCT?'var(--accent)':'transparent'}}>✓</div>
                 USE CUSTOM TEXT INSTEAD
               </button>
-              {useCT&&<input type="text" placeholder="Type your symbol or word..." value={cfg.ct} onChange={e=>setCfg(p=>({...p,ct:e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'12px',transition:'border-color .3s'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>}
+              {useCT&&<input type="text" placeholder="Type your symbol or word..." value={cfg.ct} onChange={e=>setCfg(p=>({...p,ct:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&e.preventDefault()} style={{width:'100%',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'12px',transition:'border-color .3s'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>}
             </div>
           </div>}
         </Step>
         <Step idx={5} field="notes" label="NOTES (OPTIONAL)" done={true} active={symDone}>
           {symDone&&<div>
             <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',marginBottom:'8px',letterSpacing:'1px'}}>Any special requests or details?</div>
-            <textarea placeholder="E.g., darker shade, more distressed look, specific placement..." value={cfg.notes} onChange={e=>setCfg(p=>({...p,notes:e.target.value}))} style={{width:'100%',minHeight:'80px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'11px',transition:'border-color .3s',resize:'vertical'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>
+            <textarea placeholder="E.g., darker shade, more distressed look, specific placement..." value={cfg.notes} onChange={e=>setCfg(p=>({...p,notes:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&e.stopPropagation()} style={{width:'100%',minHeight:'80px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'11px',transition:'border-color .3s',resize:'vertical'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>
           </div>}
         </Step>
         {allDone&&<div style={{marginTop:'32px',paddingTop:'22px',borderTop:'1px solid rgba(255,255,255,.1)'}}>
