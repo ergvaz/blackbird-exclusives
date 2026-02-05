@@ -13,34 +13,47 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('Environment check:', { 
-  hasKey: !!process.env.STRIPE_SECRET_KEY,
-  allEnvVars: Object.keys(process.env)
-});
     const { items } = req.body;
     
+    // Map cart items to line items
     const lineItems = items.map(item => ({
       price_data: {
         currency: 'usd',
         product_data: {
           name: item.name,
-          description: `${item.type} - Size ${item.size}`,
+          description: item.description || `${item.type} - Size ${item.size}`,
         },
         unit_amount: Math.round(item.price * 100),
       },
       quantity: 1,
     }));
+    
+    // Add shipping as a line item ($10 per product)
+    const shippingItem = {
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: 'Shipping',
+          description: `Standard shipping for ${items.length} item${items.length !== 1 ? 's' : ''}`,
+        },
+        unit_amount: items.length * 1000, // $10 per item in cents
+      },
+      quantity: 1,
+    };
+    
+    const allLineItems = [...lineItems, shippingItem];
 
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
-'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
         'success_url': `${req.headers.origin || 'https://blackbird-exclusives-okr7.vercel.app'}/?success=true`,
-        'cancel_url': `${req.headers.origin || 'https://blackbird-exclusives-okr7.vercel.app'}/#/cart`,
+        'cancel_url': `${req.headers.origin || 'https://blackbird-exclusives-okr7.vercel.app'}/?cancel=true`,
         'mode': 'payment',
-        ...lineItems.reduce((acc, item, i) => ({
+        ...allLineItems.reduce((acc, item, i) => ({
           ...acc,
           [`line_items[${i}][price_data][currency]`]: item.price_data.currency,
           [`line_items[${i}][price_data][product_data][name]`]: item.price_data.product_data.name,
