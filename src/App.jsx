@@ -335,7 +335,7 @@ function Custom({navigate,cart,setCart}) {
   return (
     <div className="pe" style={{position:'relative',zIndex:1,minHeight:'100vh'}}>
       <Nav page="custom" navigate={navigate} cartCount={cart.length}/>
-      <div style={{maxWidth:'720px',margin:'0 auto',padding:'44px 28px'}}>
+      <form onSubmit={e=>e.preventDefault()} style={{maxWidth:'720px',margin:'0 auto',padding:'44px 28px'}}>
         <div style={{marginBottom:'36px'}}><div style={{fontFamily:'var(--fm)',fontSize:'10px',color:'var(--tdim)',letterSpacing:'3px',marginBottom:'6px'}}>▸ ARCHIVE / CUSTOM</div><h2 style={{fontFamily:'var(--fc)',fontSize:'42px',color:'var(--accent)',fontWeight:400}}>Build Your Own</h2><p style={{fontFamily:'var(--fb)',fontSize:'12px',color:'var(--tdim)',marginTop:'6px',lineHeight:1.6}}>Design a one-of-a-kind piece. Custom orders are 2x base price — turnaround is 7-14 days.</p></div>
         <div style={{display:'flex',gap:'3px',marginBottom:'34px'}}>
           {['type','size','color','accent','symbol','notes'].map(s=>{const done=s==='symbol'?symDone:s==='notes'?true:cfg[s]!==null;return<div key={s} style={{flex:1,height:'2px',borderRadius:'1px',background:done?'var(--adim)':'rgba(255,255,255,.1)',transition:'background .4s'}}/>})}
@@ -360,14 +360,14 @@ function Custom({navigate,cart,setCart}) {
                 <div style={{width:'16px',height:'16px',borderRadius:'3px',border:'1px solid '+(useCT?'var(--adim)':'rgba(255,255,255,.2)'),background:useCT?'rgba(255,255,255,.12)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',color:useCT?'var(--accent)':'transparent'}}>✓</div>
                 USE CUSTOM TEXT INSTEAD
               </button>
-              {useCT&&<input type="text" placeholder="Type your symbol or word..." value={cfg.ct} onChange={e=>setCfg(p=>({...p,ct:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&e.preventDefault()} style={{width:'100%',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'12px',transition:'border-color .3s'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>}
+              {useCT&&<input type="text" placeholder="Type your symbol or word..." value={cfg.ct} onChange={e=>setCfg(p=>({...p,ct:e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'12px',transition:'border-color .3s'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>}
             </div>
           </div>}
         </Step>
         <Step idx={5} field="notes" label="NOTES (OPTIONAL)" done={true} active={symDone}>
           {symDone&&<div>
             <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',marginBottom:'8px',letterSpacing:'1px'}}>Any special requests or details?</div>
-            <textarea placeholder="E.g., darker shade, more distressed look, specific placement..." value={cfg.notes} onChange={e=>setCfg(p=>({...p,notes:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&e.stopPropagation()} style={{width:'100%',minHeight:'80px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'11px',transition:'border-color .3s',resize:'vertical'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>
+            <textarea placeholder="E.g., darker shade, more distressed look, specific placement..." value={cfg.notes} onChange={e=>setCfg(p=>({...p,notes:e.target.value}))} style={{width:'100%',minHeight:'80px',background:'rgba(255,255,255,.035)',border:'1px solid rgba(255,255,255,.18)',borderRadius:'3px',padding:'9px 14px',color:'var(--accent)',fontFamily:'var(--fm)',fontSize:'11px',transition:'border-color .3s',resize:'vertical'}} onFocus={e=>e.target.style.borderColor='rgba(255,255,255,.4)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.18)'}/>
           </div>}
         </Step>
         {allDone&&<div style={{marginTop:'32px',paddingTop:'22px',borderTop:'1px solid rgba(255,255,255,.1)'}}>
@@ -377,7 +377,7 @@ function Custom({navigate,cart,setCart}) {
           </div>
           <button onClick={addToCart} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.08)',color:'var(--accent)',cursor:'pointer',transition:'all .3s'}}>ADD TO CART</button>
         </div>}
-      </div>
+      </form>
     </div>
   );
 }
