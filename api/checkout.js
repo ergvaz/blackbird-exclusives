@@ -13,6 +13,10 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('Environment check:', { 
+  hasKey: !!process.env.STRIPE_SECRET_KEY,
+  allEnvVars: Object.keys(process.env)
+});
     const { items } = req.body;
     
     const lineItems = items.map(item => ({
