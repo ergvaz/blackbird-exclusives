@@ -318,8 +318,8 @@ function Custom({navigate,cart,setCart}) {
     </div>
   );
 
-  const Pill=({label,sel,onClick})=><button onClick={onClick} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1px',textTransform:'uppercase',padding:'7px 14px',borderRadius:'4px',border:sel?'1px solid var(--adim)':'1px solid rgba(255,255,255,.1)',background:sel?'rgba(255,255,255,.07)':'rgba(255,255,255,.025)',color:sel?'var(--accent)':'var(--tdim)',transition:'all .2s',cursor:'pointer'}}>{label}</button>;
-  const Swatch=({opt,sel,onClick})=><button onClick={onClick} style={{display:'flex',alignItems:'center',gap:'9px',fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1px',textTransform:'uppercase',padding:'8px 12px',borderRadius:'4px',border:sel?'1px solid var(--adim)':'1px solid rgba(255,255,255,.1)',background:sel?'rgba(255,255,255,.07)':'rgba(255,255,255,.025)',color:sel?'var(--accent)':'var(--tdim)',transition:'all .2s',cursor:'pointer'}}><div style={{width:'16px',height:'16px',borderRadius:'50%',flexShrink:0,background:opt.hex||'transparent',border:opt.hex?'1px solid rgba(255,255,255,.15)':'1px dashed rgba(255,255,255,.3)',boxShadow:opt.hex?`0 0 6px ${opt.hex}33`:'none',display:'flex',alignItems:'center',justifyContent:'center'}}>{!opt.hex&&<span style={{fontSize:'8px',color:'var(--tdim)'}}>✕</span>}</div>{opt.name}</button>;
+  const Pill=({label,sel,onClick})=><button type="button" onClick={onClick} style={{fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1px',textTransform:'uppercase',padding:'7px 14px',borderRadius:'4px',border:sel?'1px solid var(--adim)':'1px solid rgba(255,255,255,.1)',background:sel?'rgba(255,255,255,.07)':'rgba(255,255,255,.025)',color:sel?'var(--accent)':'var(--tdim)',transition:'all .2s',cursor:'pointer'}}>{label}</button>;
+  const Swatch=({opt,sel,onClick})=><button type="button" onClick={onClick} style={{display:'flex',alignItems:'center',gap:'9px',fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1px',textTransform:'uppercase',padding:'8px 12px',borderRadius:'4px',border:sel?'1px solid var(--adim)':'1px solid rgba(255,255,255,.1)',background:sel?'rgba(255,255,255,.07)':'rgba(255,255,255,.025)',color:sel?'var(--accent)':'var(--tdim)',transition:'all .2s',cursor:'pointer'}}><div style={{width:'16px',height:'16px',borderRadius:'50%',flexShrink:0,background:opt.hex||'transparent',border:opt.hex?'1px solid rgba(255,255,255,.15)':'1px dashed rgba(255,255,255,.3)',boxShadow:opt.hex?`0 0 6px ${opt.hex}33`:'none',display:'flex',alignItems:'center',justifyContent:'center'}}>{!opt.hex&&<span style={{fontSize:'8px',color:'var(--tdim)'}}>✕</span>}</div>{opt.name}</button>;
 
   const Step=({idx,field,label,done,active,children})=>(
     <div style={{marginBottom:'28px',opacity:active?1:.28,transition:'opacity .4s'}}>
@@ -356,7 +356,7 @@ function Custom({navigate,cart,setCart}) {
           {cfg.accent!==null&&<div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(110px,1fr))',gap:'7px',marginBottom:'14px'}}>{VIBES.map(s=><Pill key={s} label={s} sel={!useCT&&cfg.symbol===s} onClick={()=>{set('symbol',s);setUseCT(false)}}/>)}</div>
             <div style={{marginTop:'18px',paddingTop:'16px',borderTop:'1px solid rgba(255,255,255,.07)'}}>
-              <button onClick={()=>{setUseCT(!useCT);if(!useCT)set('symbol',null)}} style={{display:'flex',alignItems:'center',gap:'8px',fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1.5px',color:useCT?'var(--accent)':'var(--tdim)',transition:'color .2s',marginBottom:useCT?'12px':'0'}}>
+              <button type="button" onClick={()=>{setUseCT(!useCT);if(!useCT)set('symbol',null)}} style={{display:'flex',alignItems:'center',gap:'8px',fontFamily:'var(--fm)',fontSize:'10px',letterSpacing:'1.5px',color:useCT?'var(--accent)':'var(--tdim)',transition:'color .2s',marginBottom:useCT?'12px':'0'}}>
                 <div style={{width:'16px',height:'16px',borderRadius:'3px',border:'1px solid '+(useCT?'var(--adim)':'rgba(255,255,255,.2)'),background:useCT?'rgba(255,255,255,.12)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',color:useCT?'var(--accent)':'transparent'}}>✓</div>
                 USE CUSTOM TEXT INSTEAD
               </button>
@@ -375,7 +375,7 @@ function Custom({navigate,cart,setCart}) {
             <div><div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',letterSpacing:'1px',marginBottom:'4px'}}>CUSTOM ORDER TOTAL</div><div style={{fontFamily:'var(--fm)',fontSize:'26px',color:'var(--accent)'}}>${price}</div></div>
             <div style={{fontFamily:'var(--fm)',fontSize:'9px',color:'var(--tdim)',textAlign:'right',lineHeight:1.9}}><div>Base ${BASE_P[cfg.type]} x 2</div><div>Est. 7-14 days</div></div>
           </div>
-          <button onClick={addToCart} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.08)',color:'var(--accent)',cursor:'pointer',transition:'all .3s'}}>ADD TO CART</button>
+          <button type="button" onClick={addToCart} style={{width:'100%',fontFamily:'var(--fm)',fontSize:'11px',letterSpacing:'3px',padding:'14px',borderRadius:'3px',border:'1px solid var(--adim)',background:'rgba(255,255,255,.08)',color:'var(--accent)',cursor:'pointer',transition:'all .3s'}}>ADD TO CART</button>
         </div>}
       </form>
     </div>
