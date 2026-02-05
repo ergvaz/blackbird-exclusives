@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
-'Authorization': `Bearer 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`,        'Content-Type': 'application/x-www-form-urlencoded',
+'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
       },
       body: new URLSearchParams({
         'success_url': `${req.headers.origin || 'https://blackbird-exclusives-okr7.vercel.app'}/?success=true`,
